@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include "Item.hpp"
 
 class NPC {
 private:
@@ -29,9 +30,15 @@ public:
 
 int main() {
     NPC npc1("Guard", "Halt! Who goes there?");
+    Item booze("Booze", "Drink your pain away", 215, 11.75);
+
     
     // Using overloaded << operator
-    std::cout << "NPC Name: " << npc1 << std::endl;
+    std::cout << "NPC Name: " << npc1 << booze << std::endl;
+    std::cout << "Item here: " << booze << std::endl;
+
+
 
     return 0;
 }
+
