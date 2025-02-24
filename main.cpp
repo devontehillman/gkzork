@@ -4,24 +4,34 @@
 #include "npc.hpp"
 
 int main() {
-    Item booze("Booze ", "Booze: (A good way to drink your pain away!", 215, 11.75);
 
-    // Creating an NPC with multiple messages
+    try {
+    
+    Item booze("Booze", "Booze: (A good way to drink your pain away!", 215, 11.75);
+
+    // // Creating an NPC with multiple messages
     NPC npc1("Guard", "A stern-looking watchman.", {"Halt! Who goes there?", "Stay out of trouble.", "Move along."});
 
-    // Display NPC name and description using overloaded <<
+    // // Display NPC name and description using overloaded <<
     std::cout << npc1 << std::endl;
 
-    // Getting messages one by one
+    // // Getting messages one by one
     std::cout << "NPC says: " << npc1.getNextMessage() << std::endl;
     std::cout << "NPC says: " << npc1.getNextMessage() << std::endl;
     std::cout << "NPC says: " << npc1.getNextMessage() << std::endl;
     std::cout << "NPC says: " << npc1.getNextMessage() << std::endl; // Loops back to first message
 
-    // Using overloaded << operator
+    // // Using overloaded << operator
     std::cout << "NPC Name: " << npc1 << std::endl;
     std::cout << "Item here: " << booze << std::endl;
 
+    
+
     return 0;
+    }
+
+    catch (const std::runtime_error& error) {
+        std::cerr << "Warning Error! " << error.what() << std::endl;
+    }
 }
 
