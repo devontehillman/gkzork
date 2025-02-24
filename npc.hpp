@@ -2,6 +2,8 @@
 #define __HPP__HOUSE__
 
 #include <iostream>
+#include <vector>
+
 
 class NPC {
     private:

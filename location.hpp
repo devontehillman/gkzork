@@ -5,7 +5,7 @@
  * The Location class includes attributes such as the name, description, visited status, neighboring locations,
  * NPCs, and items present in the location. It provides methods to retrieve neighboring locations and add new locations.
  * 
- * @author Devonte H. & Horatio V.
+ * @author Devonte H. & Horacio V.
  * @date Winter 2025
  */
 
