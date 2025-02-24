@@ -29,7 +29,8 @@ class Location {
         std::vector<NPC> npcs;
         std::vector<Item> items;
     public:
-        
+    //default constructor
+    Location() : name(""), description("") {}
     Location(std::string locationName, std::string description)
         : name(locationName), description(description), visited(false) {}
 
