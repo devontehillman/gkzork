@@ -25,32 +25,9 @@ private:
 
 public:
 
-    // std::map<std::string, Command> setup_commands(){
-    //     commands["show help"] = show_help;
-
-    //     return commands;
-    // }
-
-    // Location random_location(){
-
-    // }
-
-    // Location create_world(){
-        
-        
-    //     return random_location();
-    // }
-
-    // void play(){
-
-    // }
-
-    //Game(){
-        // commands = setup_commands();//set the command map equal to the return call from our setup_commands function.
-        // currentLocation = create_world();
-    //}
-    // Member function declarations
-    Game();
+    // Member function declarations (they defined int the game.cpp file)
+    
+    Game(); //this is the constructor but we define it in game.cpp
 
     std::map<std::string, Command> setup_commands();
     Location random_location();

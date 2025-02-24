@@ -1,8 +1,10 @@
 #include "game.hpp"
+#include "Item.hpp"
+#include "npc.hpp"
+#include "location.hpp"
 #include <iostream>
 #include <cstdlib>  // For rand() and srand()
 #include <ctime>    // For time()
-#include "location.hpp"
 
 // Implementation of the show_help function
 void show_help(const std::vector<std::string>& args) {
@@ -47,21 +49,48 @@ Location Game::random_location() {
 
 // Create the game world and return the starting location.
 Location Game::create_world() {
-    // Populate the world vector with several Locations.
-    Location loc1("Library", "A quiet place full of books.");
-    Location loc2("Cafeteria", "Bustling with activity and the smell of food.");
-    Location loc3("Gym", "Loud and energetic.");
+    try {
+    
+        Item booze("Booze", "Booze: (A good way to drink your pain away!", 215, 11.75);
 
-    // Example: add locations into the world.
-    world.push_back(loc1);
-    world.push_back(loc2);
-    world.push_back(loc3);
+        // // Creating an NPC with multiple messages
+        NPC npc1("Guard", "A stern-looking watchman.", {"Halt! Who goes there?", "Stay out of trouble.", "Move along."});
 
-    // Set neighbor relationships if desired, e.g.:
-    // world[0].add_neighbor("east", &world[1]);  // etc.
+        // // // Display NPC name and description using overloaded <<
+        // std::cout << npc1 << std::endl;
 
-    // Select and return a random starting location.
-    return random_location();
+        // // // Getting messages one by one
+        // std::cout << "NPC says: " << npc1.getNextMessage() << std::endl;
+        // std::cout << "NPC says: " << npc1.getNextMessage() << std::endl;
+        // std::cout << "NPC says: " << npc1.getNextMessage() << std::endl;
+        // std::cout << "NPC says: " << npc1.getNextMessage() << std::endl; // Loops back to first message
+
+        // // // Using overloaded << operator
+        // std::cout << "NPC Name: " << npc1 << std::endl;
+        // std::cout << "Item here: " << booze << std::endl;
+
+        
+        // Populate the world vector with several Locations.
+        Location loc1("Library", "A quiet place full of books.");
+        Location loc2("Cafeteria", "Bustling with activity and the smell of food.");
+        Location loc3("Gym", "Loud and energetic.");
+
+        // Example: add locations into the world.
+        world.push_back(loc1);
+        world.push_back(loc2);
+        world.push_back(loc3);
+
+        // Set neighbor relationships if desired, e.g.:
+        // world[0].add_neighbor("east", &world[1]);  // etc.
+
+    }
+
+    catch (const std::runtime_error& error) {
+        std::cerr << "Warning Error! " << error.what() << std::endl;
+    }
+
+     // Select and return a random starting location.
+     return random_location();
 }
 
 // Main game loop method.
