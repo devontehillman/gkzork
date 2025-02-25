@@ -5,32 +5,37 @@
 #include <iostream>
 #include <cstdlib>  // For rand() and srand()
 #include <ctime>    // For time()
+#include <functional>  // For std::bind
+#include <chrono>
+#include <iomanip>
 
-// Implementation of the show_help function
-void show_help(const std::vector<std::string>& args) {
-    std::cout << "Showing help information...\n";
-}
 
 // Constructor Implementation
 Game::Game() {
     // Seed the random number generator
     srand(static_cast<unsigned int>(time(nullptr)));
-
+    
     // Initialize commands map
     commands = setup_commands();
-
+    
     // Create the world
     // (Assuming create_world() populates the world vector appropriately)
     currentLocation = create_world();
-
+    
     // Other default variable initializations:
     weight = 0;
     gameActive = true;
 }
 
+// Implementation of the show_help function
+void Game::show_help(const std::vector<std::string>& args) {
+    std::cout << "Showing help information...\n";
+}
+
 // Set up commands inside the game.
 std::map<std::string, Command> Game::setup_commands() {
-    commands["show help"] = show_help;
+    std::map<std::string, Command> cmds;
+    cmds["show help"] = std::bind(&Game::show_help, this, std::placeholders::_1);
     // Add other command mappings as needed.
     return commands;
 }
@@ -95,6 +100,10 @@ Location Game::create_world() {
 
 // Main game loop method.
 void Game::play() {
-    std::cout << "Game play is starting...\n";
-    // Insert game loop logic here.
+    std::cout << "Game play is starting..." << std::endl;
+    // Here you might run your input loop or game state updates
+
+    // Demonstration: show help information by calling the command directly.
+    std::vector<std::string> args;  // No arguments needed in this example.
+    show_help(args);
 }
