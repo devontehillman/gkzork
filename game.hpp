@@ -7,14 +7,13 @@
 #include <string>      // Added for std::string
 #include "Item.hpp"
 #include "location.hpp"
+#include "npc.hpp"
 
-// Forward declaration of show_help
-void show_help(const std::vector<std::string>&);
 
 using Command = std::function<void(const std::vector<std::string>&)>;  // Proper command type
 
 class Game {
-private:
+    private:
     std::map<std::string, Command> commands;  // Single commands map
     std::vector<Item> inventory;
     int weight;
@@ -22,12 +21,15 @@ private:
     Location currentLocation;
     int numCalories = 0;
     bool gameActive;
-
-public:
-
-    // Member function declarations (they defined int the game.cpp file)
+    
+    public:
     
     Game(); //this is the constructor but we define it in game.cpp
+    
+    // Forward declaration of show_help
+    void show_help(const std::vector<std::string>& target);
+    // Member function declarations (they defined int the game.cpp file)
+    
 
     std::map<std::string, Command> setup_commands();
     Location random_location();
