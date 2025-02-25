@@ -20,7 +20,7 @@ private:
     int weight;
     std::vector<Location> world;
     Location currentLocation;
-    int numCalories = 1000;
+    int numCalories = 0;
     bool gameActive;
 
 public:
