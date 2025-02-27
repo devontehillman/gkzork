@@ -26,7 +26,7 @@ class Game {
     
     Game(); //this is the constructor but we define it in game.cpp
     
-    // Forward declaration of show_help
+    // Forward declaration of actions
     void show_help(const std::vector<std::string>& target);
     void talk(NPC& target);
     void meet(std::vector<std::string>& target);
