@@ -28,14 +28,19 @@ class Game {
     
     // Forward declaration of show_help
     void show_help(const std::vector<std::string>& target);
-    // Member function declarations (they defined int the game.cpp file)
-    
+    void talk(NPC& target);
+    void meet(std::vector<std::string>& target);
+    void take(std::vector<std::string>& target);
+    void give(std::vector<std::string>& target);
+    void go(std::vector<std::string>& target);
+    void show_items(std::vector<std::string>& target);
+    void look(std::vector<std::string>& target);
+    void quit(std::vector<std::string>& target);
+
 
     std::map<std::string, Command> setup_commands();
     Location random_location();
     Location create_world();
-    // void talk(NPC& target);
-    void talk(NPC& target);
     void play();
 };
 
