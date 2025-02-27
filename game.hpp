@@ -34,6 +34,8 @@ class Game {
     std::map<std::string, Command> setup_commands();
     Location random_location();
     Location create_world();
+    // void talk(NPC& target);
+    void talk(NPC& target);
     void play();
 };
 

@@ -8,6 +8,7 @@
 #include <functional>  // For std::bind
 #include <chrono>
 #include <iomanip>
+#include <map> // For std::find
 
 
 // Constructor Implementation
@@ -32,10 +33,24 @@ void Game::show_help(const std::vector<std::string>& args) {
     std::cout << "Showing help information...\n";
 }
 
+// Implementation of talk function
+void Game::talk(NPC& target) {
+    
+    // if (std::find(numbers.begin(), numbers.end(), target) != numbers.end()) {
+    if (std::find(currentLocation.get_npcs().begin(), 
+    currentLocation.get_npcs().end(), target) != currentLocation.get_npcs().end()) {
+        
+        std::cout << target.getNextMessage() << std::endl;
+        // target.getNextMessage();
+    }
+
+}
+
 // Set up commands inside the game.
 std::map<std::string, Command> Game::setup_commands() {
     std::map<std::string, Command> cmds;
     cmds["show help"] = std::bind(&Game::show_help, this, std::placeholders::_1);
+    // cmds["show help"] = [this](const std::vector<std::string> arg) { show_help(arg); };
     // Add other command mappings as needed.
     return commands;
 }
@@ -44,6 +59,7 @@ std::map<std::string, Command> Game::setup_commands() {
 // (A simple placeholder implementation is provided.)
 Location Game::random_location() {
     // For example, if world is populated, pick a random index.
+
     if (!world.empty()) {
         size_t index = static_cast<size_t>(rand() % world.size());
         return world[index];
@@ -87,6 +103,8 @@ Location Game::create_world() {
 
         // Set neighbor relationships if desired, e.g.:
         // world[0].add_neighbor("east", &world[1]);  // etc.
+
+        world[0].add_npc(npc1);
 
     }
 
