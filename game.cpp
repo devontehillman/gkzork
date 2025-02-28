@@ -8,7 +8,7 @@
 #include <functional>  // For std::bind
 #include <chrono>
 #include <iomanip>
-#include <map> // For std::find
+// #include <map> // For std::find, but we many not need to include map to use std::find
 
 
 // Constructor Implementation
@@ -34,14 +34,31 @@ void Game::show_help(const std::vector<std::string>& args) {
 }
 
 // Implementation of talk function
-void Game::talk(NPC& target) {
+// void Game::talk(NPC& target) {
     
     // if (std::find(numbers.begin(), numbers.end(), target) != numbers.end()) {
-    if (std::find(currentLocation.get_npcs().begin(), 
-    currentLocation.get_npcs().end(), target) != currentLocation.get_npcs().end()) {
-        
-        std::cout << target.getNextMessage() << std::endl;
-        // target.getNextMessage();
+    // if (std::find(currentLocation.get_npcs().begin(), 
+    // currentLocation.get_npcs().end(), target) != currentLocation.get_npcs().end()) {
+
+    //     std::cout << target.getNextMessage() << std::endl;
+    //     // target.getNextMessage();
+    // }
+
+// }
+
+void Game::meet(std::vector<std::string>& target) {
+
+    std::vector<NPC> getNpcs = currentLocation.get_npcs(); // store current room's NPCs
+
+    for (auto it : getNpcs) { // loop through each NPC that's in the room
+        auto curNPCname = std::find(target.begin(), target.end(), it.getName()); 
+        // try to find the NPC's name in the vector of strings we passed in the parameter
+
+        if (curNPCname != target.end()) { // if this NPC name we tried to find doesn't reach 
+        // the end of the iteration for the vector, this means the name is definitely in vector
+            std::cout << it.getDescription() << std::endl;
+            // Now print the description the NPC gave us when we meet him/her
+        }
     }
 
 }
