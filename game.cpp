@@ -8,7 +8,7 @@
 #include <functional>  // For std::bind
 #include <chrono>
 #include <iomanip>
-// #include <map> // For std::find, but we many not need to include map to use std::find
+#include <map> // For std::find, but we many not need to include map to use std::find
 
 
 // Constructor Implementation
@@ -51,7 +51,8 @@ void Game::meet(std::vector<std::string>& target) {
     std::vector<NPC> getNpcs = currentLocation.get_npcs(); // store current room's NPCs
 
     for (auto it : getNpcs) { // loop through each NPC that's in the room
-        auto curNPCname = std::find(target.begin(), target.end(), it.getName()); 
+        auto curNPCname = std::find(target.begin(), target.end(), it.getName());
+        // found the std::find function from AI by the way 
         // try to find the NPC's name in the vector of strings we passed in the parameter
 
         if (curNPCname != target.end()) { // if this NPC name we tried to find doesn't reach 
@@ -61,6 +62,55 @@ void Game::meet(std::vector<std::string>& target) {
         }
     }
 
+}
+
+void Game::go(std::vector<std::string>& target) {
+
+    currentLocation.set_visited(); // sets visited status to true for current location
+
+    if (weight > 30) { // checks to see if player's weight is over 30 pounds.
+        std::cerr << "the player's weight is over " << weight << " lbs, can't move!";
+        return; // not sure if I'm supposed to return nothing or someething else. Can't be the
+        // weight because this function can't return an int type.
+    }
+    else {
+
+        for (auto& keyvalue_pair : currentLocation.get_locations()) { // iterate through the
+        // map/dictionary with the elements being the key and value paired up.
+            auto find_curKey = std::find(target.begin(), target.end(), keyvalue_pair.first);
+            // trying to find the key element this loop is currently looking at, in the vector of 
+            // strings we passed in the parameter
+
+            if (find_curKey != target.end()) { // if this key we tried to find doesn't reach 
+        // the end of the iteration for the vector, this means the key in map is definitely in vector
+                currentLocation = keyvalue_pair.second; // the player's current location needs to be
+                // set to the value that matches the current key from the map, but problem is that the
+                // "currentLocation" is a Location type and value is a Location* type right now, which
+                // isn't matching types. 
+                
+                // FIXED ISSUES in location.hpp by removing pointers for
+                // "neighbors" map and changed if statement to "if(pair.second.name == newLocation.name)"
+                // in add neighbor function.
+            }
+
+        }
+    }
+
+    // Game::inventory()
+
+
+
+}
+
+void Game::show_items(std::vector<std::string>& target) {
+
+    std::cout << "Current total weight we're carrying is " << weight <<
+    ". The items being carried are ---> ";
+    
+    for (auto item : inventory) { // iterate through each item player has in inventory
+        std::cout << item << "." << std::endl; // then print current item's info by
+        // calling the class itself, since it returns an ostream created in Item.hpp
+    }
 }
 
 // Set up commands inside the game.
@@ -120,6 +170,7 @@ Location Game::create_world() {
 
         // Set neighbor relationships if desired, e.g.:
         // world[0].add_neighbor("east", &world[1]);  // etc.
+        world[0].add_neighbor("east", loc1);
 
         world[0].add_npc(npc1);
 
