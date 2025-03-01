@@ -33,19 +33,6 @@ void Game::show_help(const std::vector<std::string>& args) {
     std::cout << "Showing help information...\n";
 }
 
-// Implementation of talk function
-void Game::talk(NPC& target) {
-    
-    // if (std::find(numbers.begin(), numbers.end(), target) != numbers.end()) {
-    if (std::find(currentLocation.get_npcs().begin(), 
-    currentLocation.get_npcs().end(), target) != currentLocation.get_npcs().end()) {
-        
-        std::cout << target.getNextMessage() << std::endl;
-        // target.getNextMessage();
-    }
-
-}
-
 // Set up commands inside the game.
 std::map<std::string, Command> Game::setup_commands() {
     std::map<std::string, Command> cmds;
