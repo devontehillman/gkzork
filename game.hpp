@@ -28,7 +28,7 @@ class Game {
     
     // Forward declaration of actions
     void show_help(const std::vector<std::string>& target);
-    // void talk(NPC& target); // don't need talk function anymore
+    void talk(const std::vector<std::string>& target); // don't need talk function anymore
     void meet(const std::vector<std::string>& target);
     void take(const std::vector<std::string>& target);
     void give(const std::vector<std::string>& target);

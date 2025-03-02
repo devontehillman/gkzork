@@ -3,33 +3,25 @@
 #include "npc.hpp"
 #include "location.hpp"
 #include <iostream>
-#include <cstdlib>  // For rand() and srand()
-#include <ctime>    // For time()
+#include <cstdlib>  // For rand()
 #include <functional>  // For std::bind
 #include <chrono>
 #include <iomanip>
 #include <map> // For std::find
 #include <sstream> // For std::istringstream
 
-
-// Constructor Implementation
 Game::Game() {
     // Seed the random number generator
     srand(static_cast<unsigned int>(time(nullptr)));
-    
-    // Initialize commands map
+
+    // Initialize commands map, instance of the game, loop stop condition,
     commands = setup_commands();
-    
-    // Create the world
-    // (Assuming create_world() populates the world vector appropriately)
     currentLocation = create_world();
-    
-    // Other default variable initializations:
     weight = 0;
     gameActive = true;
 }
 
-// Implementation of the show_help function
+// Prints a manuel like page of available commands for the user
 void Game::show_help(const std::vector<std::string>& args) {
     std::cout << "Available commands:\n";
     std::cout << "  show help      - Display this help message\n";
@@ -40,49 +32,40 @@ void Game::show_help(const std::vector<std::string>& args) {
     std::cout << "  show items     - Show items in your inventory\n";
     std::cout << "  look           - Look around the current location\n";
     std::cout << "  Attack         - slapp that hoe if you ain't got nothing in your inventory. ";
-    std::cout << "Otherwise, use that weapon you may have\n"; //xx Edit
+    std::cout << "  Otherwise, use that weapon you may have\n"; //xx Edit
     std::cout << "  Consume <item> - drink item \n"; //xx Edit
     std::cout << "  quit        - Quit the game\n";
 }
 
 
-// Implementation of talk function
-// void Game::talk(NPC& target) {
-    
-    // if (std::find(numbers.begin(), numbers.end(), target) != numbers.end()) {
-    // if (std::find(currentLocation.get_npcs().begin(), 
-    // currentLocation.get_npcs().end(), target) != currentLocation.get_npcs().end()) {
-
-    //     std::cout << target.getNextMessage() << std::endl;
-    //     // target.getNextMessage();
-    // }
-
-// }
+//Iterates through the NPC's list of messages
+void Game::talk(const std::vector<std::string>& target) {
+    std::vector<NPC>& getNpcs = currentLocation.get_npcs(); 
+    //find the target npc 
+    for (auto& curNPC : getNpcs) {
+        if (curNPC.getName() == target[0]) { 
+        std::cout << curNPC.getNextMessage() << std::endl;
+        return;
+        }
+    }
+    std::cout << target[0] << " does not exist at this location\n" << std::endl;
+    return;
+}
 
 void Game::meet(const std::vector<std::string>& target) {
 
-    std::vector<NPC> getNpcs = currentLocation.get_npcs(); // store current room's NPCs
+    std::vector<NPC>& getNpcs = currentLocation.get_npcs(); // store current room's NPCs
 
     std::string userInput = target[0]; //string rep of the NPC we're meeting
 
     for (auto curNPC : getNpcs) { // loop through each NPC that's in the room
-        // auto curNPCname = std::find(target.begin(), target.end(), curNPC.getName());
-        // found the std::find function from AI by the way 
-        // try to find the NPC's name in the vector of strings we passed in the parameter
 
-        if (curNPC.getName() == userInput) { // if this NPC name we tried to find doesn't reach 
-        // the end of the iteration for the vector, this means the name is definitely in vector
+        if (curNPC.getName() == userInput) { // if current NPC is the same as the name user inputs
             std::cout << curNPC.getDescription() << std::endl;
-            return;
-
-        // if (curNPCname != target.end()) { // if this NPC name we tried to find doesn't reach 
-        // // the end of the iteration for the vector, this means the name is definitely in vector
-        //     std::cout << curNPC.getDescription() << std::endl;
-        //     return;
-            // Now print the description the NPC gave us when we meet him/her
+            // Now print the description the NPC gives us when we meet him/her
+            return; 
         }
     }
-
     std::cout << "NPC not found" << std::endl;
     return;
 }
@@ -99,62 +82,40 @@ void Game::go(const std::vector<std::string>& target) {
 
     if (weight > 30) { // checks to see if player's weight is over 30 pounds.
         std::cerr << "the player's weight is over " << weight << " lbs, can't move!";
-        return; // not sure if I'm supposed to return nothing or someething else. Can't be the
-        // weight because this function can't return an int type.
+        return; 
     }
-    else {
 
+    else {
         std::string userInput = target[0]; //string rep of the Location we're going to
 
         for (auto& keyvalue_pair : currentLocation.get_neighbors()) { // iterate through the
             // map/dictionary with the elements being the key and value paired up, for example:
             // key for first iteration could be a string - "North", value associated to that key
-            // is the Location object.
-            // auto curKey = std::find(target.begin(), target.end(), keyvalue_pair.first);
-            // trying to find the key element this loop is currently looking at, in the vector of 
-            // strings we passed in the parameter
+            // is the Location object we want to go to.
 
-            if (keyvalue_pair.first == userInput) {
-                // looping through game class to find set current location
-                for (size_t i = 0; i < world.size(); ++i) { 
+            if (keyvalue_pair.first == userInput) { // If the key direction from the game's current
+                // location is the same as the direction the user inputs
+
+                for (size_t i = 0; i < world.size(); ++i) { // looping thru each Location in game's world
                     if (world[i].get_name() == keyvalue_pair.second.get_name()) {
+                        // If current game instance Location name is the same as the current locations 
+                        // neighbor map name.
+
                         currentLocation = world[i];
+                        // set current location to the instance in the game instance 
+                        // (we had issue with current locations neighbor map)
                         return;
                     }
                 }
-                // the player's current location needs to be
-                // set to the value that matches the current key from the map, but problem is that the
-                // "currentLocation" is a Location type and value is a Location* type right now, which
-                // isn't matching types. 
-                
-                // FIXED ISSUES in location.hpp by removing pointers for
-                // "neighbors" map and changed if statement to "if(pair.second.name == newLocation.name)"
-                // in add neighbor function.
             }
-
-            // if (curKey != target.end()) { // if this key we tried to find doesn't reach 
-            // // the end of the iteration for the vector, this means the key in map is definitely in vector
-            //     currentLocation = keyvalue_pair.second; 
-            //     std::cout << currentLocation << std::endl; //xx
-            //     return;
-            //     // the player's current location needs to be
-            //     // set to the value that matches the current key from the map, but problem is that the
-            //     // "currentLocation" is a Location type and value is a Location* type right now, which
-            //     // isn't matching types. 
-                
-            //     // FIXED ISSUES in location.hpp by removing pointers for
-            //     // "neighbors" map and changed if statement to "if(pair.second.name == newLocation.name)"
-            //     // in add neighbor function.
-            // }
         }
-
         std::cout << "Can't go to the direction you provided" << std::endl;
         return;
     }
 }
+
 /*
-If the std::vector target item is in the room it will remove it from
-the room’s inventory, add it to the user’s inventory, and add the weight of
+Takes an item from a location and places it to user’s inventory, and add the weight of
 the item to the user’s carried weight.
 */
 void Game::take(const std::vector<std::string>& target) {
@@ -179,16 +140,7 @@ void Game::take(const std::vector<std::string>& target) {
 
     }
     std::cout << "There is no " << userInput << " here.\n";
-    // //iterates through the items list if the item is inside the list it == the last item in the list. 
-    // auto it = std::find(items.begin(), items.end(), [userInput](const Item& item) {
-    //     return item.get_name() == userInput; 
-    // });
-
-
-    // Game::inventory()
-
-
-
+    return;
 }
 
 void Game::show_items(const std::vector<std::string>& target) {
@@ -204,29 +156,13 @@ void Game::show_items(const std::vector<std::string>& target) {
     for (auto item : inventory) { // iterate through each item player has in inventory
         std::cout << item << "." << std::endl; // then print current item's info by
         // calling the class itself, since it returns an ostream created in Item.hpp
-
-    // if (it != items.end()) {
-    //     // Item found in the room
-    //     Item item = *it;
-    //     currentLocation.remove_item(item); // Remove item from room's inventory
-    //     inventory.push_back(item); // Add item to user's inventory
-    //     weight += item.get_weight(); // Add item's weight to user's carried weight
-    //     std::cout << "You have taken the " << item.get_name() << ".\n";
-    // } else {
-    //     std::cout << "There is no " << userInput << " here.\n"; //xx might not need because the remove item prints item not available if it dne
-    // }
     }
 }
 
-
 /*
-Removes the std::vector target item (if it exists) from the user’s inventory, 
-adds it to the current location’s inventory and decreases the user’s carried weight.
-The function will then check if the current location is the woods. 
-If it is, it will check if the item given was edible. If the item is edible, reduce
-the number of calories the item has from the total the elf needs. 
-If the item was not edible, transport the player to a new location by setting the
-current location equal to the return from random_location
+Removes the target item from the user's inventory, adds it to the current location's inventory,
+and decreases carried weight. If the location is the woods and the item is edible, reduce the elf's 
+required calories. If not edible, move the player to a random location.
 */
 void Game::give(const std::vector<std::string>& args) {
     if (args.empty()) {
@@ -237,6 +173,7 @@ void Game::give(const std::vector<std::string>& args) {
     // checking is the user has the item in their inventory
     std::string userInput = args[0]; // storing the user input in a var
     auto it = std::find_if(inventory.begin(), inventory.end(), [&userInput](const Item& item) {
+        
         return item.get_name() == userInput;
     });
 
@@ -270,42 +207,19 @@ void Game::give(const std::vector<std::string>& args) {
 }
 
 /*
-look(std::vector<std::string> target) method.
-This method will print the current location, a vector of Items
-in the location or a message indicating there are none, a vector of NPCs in
-the room or the message “You are alone.”, and a vector of directions in
-which the player can go. If a location has been visited previously, print
-the direction and the location. Otherwise, simply print the direction.
+Displays the current location, available items (or a message if none), 
+NPCs (or "You are alone." if none), and possible directions. Previously visited locations 
+are shown with their names; otherwise, only the direction is displayed.
 */
 void Game::look(const std::vector<std::string>& target) {
     std::cout << "You are at: " << currentLocation.get_name() << "\n";
-    std::cout << currentLocation << "\n";
-    
-    // // Print items in the location
-    // std::vector<Item> items = currentLocation.get_items();
-    // if (!items.empty()) {
-    //     std::cout << "Items here:\n";
-    //     for (const auto& item : items) {
-    //         std::cout << "- " << item.get_name() << "\n";
-    //     }
-    // } else {
-    //     std::cout << "There are no items here.\n";
-    // }
 
-    // // Print NPCs in the location
-    // std::vector<NPC> npcs = currentLocation.get_npcs();
-    // if (!npcs.empty()) {
-    //     std::cout << "NPCs here:\n";
-    //     for (const auto& npc : npcs) {
-    //         std::cout << "- " << npc.getName() << ": " << npc.getDescription() << "\n";
-    //     }
-    // } else {
-    //     std::cout << "You are alone.\n";
-    // }
-
-    // Print directions and neighboring locations
+    //accessing neighbors for iteration
     std::map<std::string, Location> neighbors = currentLocation.get_neighbors();
-    if (!neighbors.empty()) {
+    
+    
+    
+    if (currentLocation.get_neighbors().empty()) {
         std::cout << "You can go:\n";
         for (const auto& neighbor : neighbors) {
             const std::string& direction = neighbor.first;
@@ -338,13 +252,28 @@ void Game::quit(const std::vector<std::string>& args) {
 std::map<std::string, Command> Game::setup_commands() {
     std::map<std::string, Command> cmds;
     cmds["show help"] = std::bind(&Game::show_help, this, std::placeholders::_1);
+    cmds["talk"]      = std::bind(&Game::talk, this, std::placeholders::_1);
+    cmds["speak"]      = std::bind(&Game::talk, this, std::placeholders::_1);
+    cmds["rattle"]      = std::bind(&Game::talk, this, std::placeholders::_1);
     cmds["meet"]      = std::bind(&Game::meet, this, std::placeholders::_1);
-    cmds["take"]      = std::bind(&Game::take, this, std::placeholders::_1); //xx 
-    cmds["give"]      = std::bind(&Game::give, this, std::placeholders::_1); //xx
+    cmds["encounter"]      = std::bind(&Game::meet, this, std::placeholders::_1);
+    cmds["confront"]      = std::bind(&Game::meet, this, std::placeholders::_1);
+    cmds["take"]      = std::bind(&Game::take, this, std::placeholders::_1); 
+    cmds["get"]      = std::bind(&Game::take, this, std::placeholders::_1);
+    cmds["grab"]      = std::bind(&Game::take, this, std::placeholders::_1); 
+    cmds["give"]      = std::bind(&Game::give, this, std::placeholders::_1); 
+    cmds["feed"]      = std::bind(&Game::give, this, std::placeholders::_1);
+    cmds["lend"]      = std::bind(&Game::give, this, std::placeholders::_1); 
     cmds["go"]        = std::bind(&Game::go, this, std::placeholders::_1);
+    cmds["walk"]        = std::bind(&Game::go, this, std::placeholders::_1);
+    cmds["run"]        = std::bind(&Game::go, this, std::placeholders::_1);
     cmds["show items"]= std::bind(&Game::show_items, this, std::placeholders::_1);
-    cmds["look"]      = std::bind(&Game::look, this, std::placeholders::_1); //xx
-    cmds["quit"]      = std::bind(&Game::quit, this, std::placeholders::_1); //xx
+    cmds["look"]      = std::bind(&Game::look, this, std::placeholders::_1);
+    cmds["see"]      = std::bind(&Game::look, this, std::placeholders::_1); 
+    cmds["investigate"]      = std::bind(&Game::look, this, std::placeholders::_1); 
+    cmds["quit"]      = std::bind(&Game::quit, this, std::placeholders::_1); 
+    cmds["terminate"]      = std::bind(&Game::quit, this, std::placeholders::_1); 
+    cmds["retire"]      = std::bind(&Game::quit, this, std::placeholders::_1); 
     return cmds;
 }
 
@@ -366,18 +295,18 @@ Location Game::random_location() {
 // Create the game world and return the starting location.
 Location Game::create_world() {
     try {
-    
-        Item booze("Booze", "Booze: (A good way to drink your pain away!", 215, 1.55); // 1
-        Item Beef("Beef", "Beef: (This will save your hunger!", 180, 7.75); // 2
-        Item Knife("Knife", "Knife: (Stab a scary NPC in the gut!", 0, 2.12); // 3
-        Item Mango("Mango", "Mango: (It is bright yellow, so it is super sweet!", 125, 1.10); // 4
-        Item Peanuts("Peanuts", "Peanuts: (Eat a few to fill empty tummy!", 196, 3.22); // 5
-        Item Hi_C("Hi-C", "Hi-C: (You can drink this to quench thirst!", 171, 1.30); // 6
-        Item Chainsaw("Chainsaw", "Chainsaw: (Slice your enemies!!!!", 0, 13.85); // 7
-        Item Broccoli("Broccoli", "Broccoli: (Healthy and low-calorie intake", 40, 0.98); // 8
-        Item Cauliflower("Cauliflower", "Cauliflower: (Tastier alternative to Broccoli!", 500, 1.06); // 9
-        // changed calorie of Cauliflower to 500 to test, change back to 40 when done
-        Item Cilantro("Cilantro", "Cilantro: (Swallow by itself or put on top of meat!", 28, 0.32); // 10
+
+        // Created 10 Items
+        Item booze("Booze", "Booze: (A good way to drink your pain away!", 215, 1.55); 
+        Item Beef("Beef", "Beef: (This will save your hunger!", 180, 7.75);
+        Item Knife("Knife", "Knife: (Stab a scary NPC in the gut!", 0, 2.12); 
+        Item Mango("Mango", "Mango: (It is bright yellow, so it is super sweet!", 125, 1.10); 
+        Item Peanuts("Peanuts", "Peanuts: (Eat a few to fill empty tummy!", 196, 3.22); 
+        Item Hi_C("Hi-C", "Hi-C: (You can drink this to quench thirst!", 171, 1.30);
+        Item Chainsaw("Chainsaw", "Chainsaw: (Slice your enemies!!!!", 0, 13.85); 
+        Item Broccoli("Broccoli", "Broccoli: (Healthy and low-calorie intake", 40, 0.98); 
+        Item Cauliflower("Cauliflower", "Cauliflower: (Tastier alternative to Broccoli!", 40, 1.06);
+        Item Cilantro("Cilantro", "Cilantro: (Swallow by itself or put on top of meat!", 28, 0.32); 
 
         // // Creating 5 NPCs with multiple messages
         NPC Guard("Guard", "A stern-looking watchman.", 
@@ -394,20 +323,7 @@ Location Game::create_world() {
 
         NPC WonderWoman("WonderWoman", "Very pretty hero chick.", 
         {"I am a villian now", "Leave before I hit you"});
-        // // // Display NPC name and description using overloaded <<
-        // std::cout << npc1 << std::endl;
 
-        // // // Getting messages one by one
-        // std::cout << "NPC says: " << npc1.getNextMessage() << std::endl;
-        // std::cout << "NPC says: " << npc1.getNextMessage() << std::endl;
-        // std::cout << "NPC says: " << npc1.getNextMessage() << std::endl;
-        // std::cout << "NPC says: " << npc1.getNextMessage() << std::endl; // Loops back to first message
-
-        // // // Using overloaded << operator
-        // std::cout << "NPC Name: " << npc1 << std::endl;
-        // std::cout << "Item here: " << booze << std::endl;
-
-        
         // Populate the world vector with several Locations.
         Location loc1("Library", "A quiet place full of books.");
         Location loc2("Cafeteria", "Bustling with activity and the smell of food.");
@@ -431,9 +347,6 @@ Location Game::create_world() {
         world.push_back(loc8); // Gym
         world.push_back(loc9); // Woods
         world.push_back(loc10); // Laker Village
-
-        // Set neighbor relationships if desired, e.g.:
-        // world[0].add_neighbor("east", &world[1]);  // etc.
 
         //world[0] = lib
         world[0].add_neighbor("east", world[3]); //east is Kirkhof (loc4) 
@@ -481,7 +394,7 @@ Location Game::create_world() {
         world[9].add_neighbor("west", world[2]); //west is Blue C (loc3) 
         world[9].add_neighbor("south", world[3]); //south is Kirkhof (loc4)
 
-        //NPC 
+        //NPCs 
         world[1].add_npc(BigFoot); // Cafeteria
         world[7].add_npc(WonderWoman); // Gym
         world[8].add_npc(Elf); // Woods
@@ -510,44 +423,19 @@ Location Game::create_world() {
      return random_location();
 }
 
-// Main game loop method.
-
 /*
-• a void play() method. This is the core game loop. It should first print a
-message describing the game, then call the method to vector all commands.
-Then, while the game is still in progress, it will loop. 
-
-In the loop, we will prompt the user for a command. The user may enter multiple words
-in a prompt. We will split the user’s input into a vector of words. We
-can split on spaces with code tokens = user_response.split(). Once
-we have the tokens vector, create a variable called command and set it
-equal to the first element in the vector. Then, remove the first element
-with the del(tokens[0]) command. Then, use the code target = '
-'.join(tokens) code to put the remaining tokens together. Thus, if the
-user enters 'talk ball of light" then command will be equal to talk, and target will be ball of light split
-into a std::vector on the spaces. We will then call the function from the commands map by using this key. Pass
-target as a parameter to the called function. If the command does not exist in
-the map print a message to the user telling them so.
-Once the loop ends (i.e. the in-progress variable is false), check if the elf got
-enough calories. If it did, print a success message and quit. Otherwise, print a
-failure message and quit.
-
+core game loop.  prompts user for input, splits it into a command and target, and executes the 
+corresponding function from the command map. If the command is invalid, it notifies 
+the user. loop checks if the elf consumed enough calories, displaying 
+a success or failure message accordingly.
 */
 void Game::play() {
-    // std::cout << "Game play is starting..." << std::endl;
-    // // Here you might run your input loop or game state updates
-
-    // // Demonstration: show help information by calling the command directly.
-    // std::vector<std::string> args;  // No arguments needed in this example.
-    // show_help(args);
-
     std::cout << "Welcome to the game! Your adventure begins now...\n";
     std::cout << "Type 'show help' to see available commands.\n";
 
     while (gameActive) {
         std::cout << "> ";
 
-        //std::cout << currentLocation << std::endl; //xx
         std::string userInput;
         std::getline(std::cin, userInput);
 
@@ -561,20 +449,143 @@ void Game::play() {
 
         std::string command = tokens[0];
 
+        // clear the terminal
+        if (command == "clear") {
+            #ifdef _WIN32
+            system("cls");
+            #else
+            system("clear");
+            #endif
+            continue;
+        }
+        
+        // Remove specific preposition words from tokens
+        std::vector<std::string> wordsToRemove = {
+        "a", 
+        "abaft",
+        "aboard",
+        "about",
+        "above",
+        "absent",
+        "across",
+        "afore",
+        "after",
+        "against",
+        "along",
+        "alongside",
+        "amid",
+        "amidst",
+        "among",
+        "amongst",
+        "an",
+        "anenst",
+        "apropos",
+        "apud",
+        "around",
+        "as",
+        "aside",
+        "astride",
+        "at",
+        "athwart",
+        "atop",
+        "barring",
+        "before",
+        "behind",
+        "below",
+        "beneath",
+        "beside",
+        "besides",
+        "between",
+        "beyond",
+        "but",
+        "by",
+        "circa",
+        "concerning",
+        "despite",
+        "down",
+        "during",
+        "except",
+        "excluding",
+        "failing",
+        "following",
+        "for",
+        "forenenst",
+        "from",
+        "given",
+        "in",
+        "including",
+        "inside",
+        "into",
+        "lest",
+        "like",
+        "mid",
+        "midst",
+        "minus",
+        "modulo",
+        "near",
+        "next",
+        "notwithstanding",
+        "of",
+        "off",
+        "on",
+        "onto",
+        "opposite",
+        "out",
+        "outside",
+        "over",
+        "pace",
+        "past",
+        "per",
+        "plus",
+        "pro",
+        "qua",
+        "regarding",
+        "round",
+        "sans",
+        "save",
+        "since",
+        "than",
+        "the",
+        "through",
+        "throughout",
+        "till",
+        "times",
+        "to",
+        "toward",
+        "towards",
+        "under",
+        "underneath",
+        "unlike",
+        "until",
+        "unto",
+        "up",
+        "upon",
+        "versus",
+        "via",
+        "vice",
+        "with",
+        "within",
+        "without",
+        "worth"
+        };
+        
+        tokens.erase(std::remove_if(tokens.begin(), tokens.end(), 
+            [&wordsToRemove](const std::string& word) {
+            return std::find(wordsToRemove.begin(), wordsToRemove.end(), word) != wordsToRemove.end();
+            }), tokens.end());
+        
         if (tokens.size() > 1 && tokens[1] == "help" || tokens[1] == "items") {
             command = tokens[0] + " " + tokens[1];
             tokens.erase(tokens.begin());
         }
-        // check of token == to two word commands XX
-        tokens.erase(tokens.begin());
         
+        tokens.erase(tokens.begin());
 
         if (commands.find(command) != commands.end()) {
             commands[command](tokens);
         } else {
             std::cout << "Unknown command: " << command << "\n";
         }
-        //currentLocation = random_location(); //xx
     }
 
     if (numCalories <= 0) {
