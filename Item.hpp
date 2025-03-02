@@ -104,9 +104,22 @@ class Item {
     //         weight = item_weight;
     //     }
     // }
+    std::string get_name() const {
+        return itemname;
+    }
 
+    float get_weight() const {
+        return weight;
+    }
 
+    int get_calories() const {
+        return calories;
+    }
 
+    // Overload the == operator
+    bool operator==(const Item& other) const {
+        return itemname == other.itemname;
+    }
 
     friend std::ostream& operator<<(std::ostream& os, const Item& obj){
     os << obj.itemname << "(" << obj.calories << " calories) - " << obj.weight << " lb - " << obj.descriptname;
