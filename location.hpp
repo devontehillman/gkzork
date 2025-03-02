@@ -37,13 +37,6 @@ class Location {
     //this is named add_location in the instructions 
     void add_neighbor(std::string direction, Location& newLocation){
         // add new location into the map with the provided direction
-        
-        // //check if direction(key) is valid 1-5 or n,s,e,w + 'through' XX I could use this or get rid of it
-        // if (neighbors.find(direction) != neighbors.end()) {
-        //     std::cout << "There is a location to the north.\n";
-        // } else {
-        //     std::cout << "No location exists in that direction.\n";
-        // }
 
         //check if their is already a location for that direction
         if(neighbors.find(direction) != neighbors.end()) {
@@ -61,8 +54,6 @@ class Location {
         }
         // add to neighbor map
         neighbors[direction] = newLocation;
-
-
     }
 
     //adding an npc into the vector of the npc
@@ -75,7 +66,7 @@ class Location {
         return npcs;
     }
 
-    //XX adding an item to the 'Locations NPC vector'???? 
+    // this is for adding items to whatever location in the game world 
     void add_item(Item& item){
         items.push_back(item);
     }
