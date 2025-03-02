@@ -31,7 +31,18 @@ Game::Game() {
 
 // Implementation of the show_help function
 void Game::show_help(const std::vector<std::string>& args) {
-    std::cout << "Showing help information...\n";
+    std::cout << "Available commands:\n";
+    std::cout << "  show help      - Display this help message\n";
+    std::cout << "  meet <npc>     - Meet an NPC in the current location\n";
+    std::cout << "  take <item>    - Take an item from the current location\n";
+    std::cout << "  give <item>    - Give an item to the current location or NPC\n";
+    std::cout << "  go <direction> - Move to a neighboring location\n";
+    std::cout << "  show items     - Show items in your inventory\n";
+    std::cout << "  look           - Look around the current location\n";
+    std::cout << "  Attack         - slapp that hoe if you ain't got nothing in your inventory. ";
+    std::cout << "Otherwise, use that weapon you may have\n"; //xx Edit
+    std::cout << "  Consume <item> - drink item \n"; //xx Edit
+    std::cout << "  quit        - Quit the game\n";
 }
 
 
@@ -52,15 +63,22 @@ void Game::meet(const std::vector<std::string>& target) {
 
     std::vector<NPC> getNpcs = currentLocation.get_npcs(); // store current room's NPCs
 
+    std::string userInput = target[0]; //string rep of the NPC we're meeting
+
     for (auto curNPC : getNpcs) { // loop through each NPC that's in the room
-        auto curNPCname = std::find(target.begin(), target.end(), curNPC.getName());
+        // auto curNPCname = std::find(target.begin(), target.end(), curNPC.getName());
         // found the std::find function from AI by the way 
         // try to find the NPC's name in the vector of strings we passed in the parameter
 
-        if (curNPCname != target.end()) { // if this NPC name we tried to find doesn't reach 
+        if (curNPC.getName() == userInput) { // if this NPC name we tried to find doesn't reach 
         // the end of the iteration for the vector, this means the name is definitely in vector
             std::cout << curNPC.getDescription() << std::endl;
             return;
+
+        // if (curNPCname != target.end()) { // if this NPC name we tried to find doesn't reach 
+        // // the end of the iteration for the vector, this means the name is definitely in vector
+        //     std::cout << curNPC.getDescription() << std::endl;
+        //     return;
             // Now print the description the NPC gave us when we meet him/her
         }
     }
@@ -73,7 +91,7 @@ void Game::meet(const std::vector<std::string>& target) {
 
 void Game::go(const std::vector<std::string>& target) {
 
-    if (currentLocation.get_locations().empty()) {
+    if (currentLocation.get_neighbors().empty()) {
         std::cout << "There aren't any neighbors for current location" << std::endl;
     }
 
@@ -86,18 +104,24 @@ void Game::go(const std::vector<std::string>& target) {
     }
     else {
 
+        std::string userInput = target[0]; //string rep of the Location we're going to
+
         for (auto& keyvalue_pair : currentLocation.get_neighbors()) { // iterate through the
             // map/dictionary with the elements being the key and value paired up, for example:
             // key for first iteration could be a string - "North", value associated to that key
             // is the Location object.
-            auto curKey = std::find(target.begin(), target.end(), keyvalue_pair.first);
+            // auto curKey = std::find(target.begin(), target.end(), keyvalue_pair.first);
             // trying to find the key element this loop is currently looking at, in the vector of 
             // strings we passed in the parameter
 
-            if (curKey != target.end()) { // if this key we tried to find doesn't reach 
-            // the end of the iteration for the vector, this means the key in map is definitely in vector
-                currentLocation = keyvalue_pair.second; 
-                return;
+            if (keyvalue_pair.first == userInput) {
+                // looping through game class to find set current location
+                for (size_t i = 0; i < world.size(); ++i) { 
+                    if (world[i].get_name() == keyvalue_pair.second.get_name()) {
+                        currentLocation = world[i];
+                        return;
+                    }
+                }
                 // the player's current location needs to be
                 // set to the value that matches the current key from the map, but problem is that the
                 // "currentLocation" is a Location type and value is a Location* type right now, which
@@ -107,6 +131,21 @@ void Game::go(const std::vector<std::string>& target) {
                 // "neighbors" map and changed if statement to "if(pair.second.name == newLocation.name)"
                 // in add neighbor function.
             }
+
+            // if (curKey != target.end()) { // if this key we tried to find doesn't reach 
+            // // the end of the iteration for the vector, this means the key in map is definitely in vector
+            //     currentLocation = keyvalue_pair.second; 
+            //     std::cout << currentLocation << std::endl; //xx
+            //     return;
+            //     // the player's current location needs to be
+            //     // set to the value that matches the current key from the map, but problem is that the
+            //     // "currentLocation" is a Location type and value is a Location* type right now, which
+            //     // isn't matching types. 
+                
+            //     // FIXED ISSUES in location.hpp by removing pointers for
+            //     // "neighbors" map and changed if statement to "if(pair.second.name == newLocation.name)"
+            //     // in add neighbor function.
+            // }
         }
 
         std::cout << "Can't go to the direction you provided" << std::endl;
@@ -156,10 +195,11 @@ void Game::show_items(const std::vector<std::string>& target) {
 
     if (inventory.empty()) {
         std::cout << "You have no items in your inventory" << std::endl;
+        return;
     }
 
     std::cout << "Current total weight we're carrying is " << weight <<
-    ". The items being carried are ---> ";
+    "lb. The items being carried are --->" << std::endl;
     
     for (auto item : inventory) { // iterate through each item player has in inventory
         std::cout << item << "." << std::endl; // then print current item's info by
@@ -214,6 +254,10 @@ void Game::give(const std::vector<std::string>& args) {
                 // Reduce the number of calories the elf needs
                 numCalories -= item.get_calories();
                 std::cout << "The elf consumes the " << item.get_name() << ".\n";
+                std::cout << "The elfs needs: " << numCalories << ".\n";
+            if (numCalories <= 0) {
+                gameActive = false;
+            }
             } else {
                 // Transport the player to a new location
                 currentLocation = random_location();
@@ -233,31 +277,31 @@ the room or the message “You are alone.”, and a vector of directions in
 which the player can go. If a location has been visited previously, print
 the direction and the location. Otherwise, simply print the direction.
 */
-void Game::look(const std::vector<std::string>& args) {
+void Game::look(const std::vector<std::string>& target) {
     std::cout << "You are at: " << currentLocation.get_name() << "\n";
-    std::cout << currentLocation.get_description() << "\n";
+    std::cout << currentLocation << "\n";
+    
+    // // Print items in the location
+    // std::vector<Item> items = currentLocation.get_items();
+    // if (!items.empty()) {
+    //     std::cout << "Items here:\n";
+    //     for (const auto& item : items) {
+    //         std::cout << "- " << item.get_name() << "\n";
+    //     }
+    // } else {
+    //     std::cout << "There are no items here.\n";
+    // }
 
-    // Print items in the location
-    std::vector<Item> items = currentLocation.get_items();
-    if (!items.empty()) {
-        std::cout << "Items here:\n";
-        for (const auto& item : items) {
-            std::cout << "- " << item.get_name() << "\n";
-        }
-    } else {
-        std::cout << "There are no items here.\n";
-    }
-
-    // Print NPCs in the location
-    std::vector<NPC> npcs = currentLocation.get_npcs();
-    if (!npcs.empty()) {
-        std::cout << "NPCs here:\n";
-        for (const auto& npc : npcs) {
-            std::cout << "- " << npc.getName() << ": " << npc.getDescription() << "\n";
-        }
-    } else {
-        std::cout << "You are alone.\n";
-    }
+    // // Print NPCs in the location
+    // std::vector<NPC> npcs = currentLocation.get_npcs();
+    // if (!npcs.empty()) {
+    //     std::cout << "NPCs here:\n";
+    //     for (const auto& npc : npcs) {
+    //         std::cout << "- " << npc.getName() << ": " << npc.getDescription() << "\n";
+    //     }
+    // } else {
+    //     std::cout << "You are alone.\n";
+    // }
 
     // Print directions and neighboring locations
     std::map<std::string, Location> neighbors = currentLocation.get_neighbors();
@@ -311,9 +355,11 @@ Location Game::random_location() {
 
     if (!world.empty()) {
         size_t index = static_cast<size_t>(rand() % world.size());
+        std::cout << "World is not empty" << std::endl; //xx
         return world[index];
     }
     // Return a default location if world vector is empty.
+    std::cout << "World is empty" << std::endl; //xx
     return Location("Default Location", "A nondescript location.");
 }
 
@@ -329,7 +375,8 @@ Location Game::create_world() {
         Item Hi_C("Hi-C", "Hi-C: (You can drink this to quench thirst!", 171, 1.30); // 6
         Item Chainsaw("Chainsaw", "Chainsaw: (Slice your enemies!!!!", 0, 13.85); // 7
         Item Broccoli("Broccoli", "Broccoli: (Healthy and low-calorie intake", 40, 0.98); // 8
-        Item Cauliflower("Cauliflower", "Cauliflower: (Tastier alternative to Broccoli!", 45, 1.06); // 9
+        Item Cauliflower("Cauliflower", "Cauliflower: (Tastier alternative to Broccoli!", 500, 1.06); // 9
+        // changed calorie of Cauliflower to 500 to test, change back to 40 when done
         Item Cilantro("Cilantro", "Cilantro: (Swallow by itself or put on top of meat!", 28, 0.32); // 10
 
         // // Creating 5 NPCs with multiple messages
@@ -370,6 +417,8 @@ Location Game::create_world() {
         Location loc6("Mackinac", "Everyone's walking fast to their classes.");
         Location loc7("AuSable", "It's dead in this hall, barely anybody.");
         Location loc8("Gym", "Loud and energetic.");
+        Location loc9("Woods", "It is raining heavy in this bih");
+        Location loc10("Laker Village", "It is getting buck wild 'round here.");
 
         // Example: add locations into the world.
         world.push_back(loc1); // Library
@@ -380,90 +429,66 @@ Location Game::create_world() {
         world.push_back(loc6); // Mackinac
         world.push_back(loc7); // AuSable
         world.push_back(loc8); // Gym
+        world.push_back(loc9); // Woods
+        world.push_back(loc10); // Laker Village
 
         // Set neighbor relationships if desired, e.g.:
         // world[0].add_neighbor("east", &world[1]);  // etc.
 
-        world[0].add_neighbor("east", world[3]); // world[0] == library, east from library 
-        // will be Kirkhof (loc4) check!
-        world[0].add_neighbor("west", world[4]); // world[0] == library, west from library 
-        // will be Bathroom (loc5) check!
-        world[0].add_neighbor("north", world[2]); // world[0] == library, north from library 
-        // will be Blue Connection (loc3) check!
-        world[0].add_neighbor("south", world[1]); // world[0] == library, south from library 
-        // will be Cafeteria (loc2) check!
+        //world[0] = lib
+        world[0].add_neighbor("east", world[3]); //east is Kirkhof (loc4) 
+        world[0].add_neighbor("west", world[4]); //west is Bathroom (loc5) 
+        world[0].add_neighbor("north", world[2]); //north is Blue Connection (loc3) 
+        world[0].add_neighbor("south", world[1]); //south is Cafeteria (loc2) 
 
-        world[1].add_neighbor("east", world[7]); // world[0] == Cafeteria, east from Cafeteria 
-        // will be Gym (loc8) check!
-        world[1].add_neighbor("west", world[6]); // world[0] == Cafeteria, west from Cafeteria 
-        // will be Ausable (loc7) check!
-        world[1].add_neighbor("north", world[0]); // world[0] == Cafeteria, north from Cafeteria 
-        // will be Library (loc1) check!
-        world[1].add_neighbor("south", world[5]); // world[0] == Cafeteria, south from Cafeteria 
-        // will be Mackinac (loc6) check!
+        // world[1] == Cafeteria,
+        world[1].add_neighbor("east", world[7]); //east is Gym (loc8) 
+        world[1].add_neighbor("west", world[6]); //west is Ausable (loc7) 
+        world[1].add_neighbor("north", world[0]); //north is Library (loc1) 
+        world[1].add_neighbor("south", world[5]); //south is Mackinac (loc6) 
+        
+        // world[2] == Blue Connection,
+        world[2].add_neighbor("east", world[9]); // east is Laker Village (loc10) 
+        world[2].add_neighbor("west", world[8]); // west is Woods (loc9) 
+        world[2].add_neighbor("south", world[0]); // south is Library (loc1) 
 
-        world[2].add_neighbor("east", world[5]); // world[0] == Blue Connection, east from Blue Connection 
-        // will be Mackinac (loc6) check!
-        world[2].add_neighbor("west", world[7]); // world[0] == Blue Connection, west from Blue Connection 
-        // will be Gym (loc8) check!
-        world[2].add_neighbor("north", world[3]); // world[0] == Blue Connection, north from Blue Connection 
-        // will be Kirkhof (loc4) check!
-        world[2].add_neighbor("south", world[0]); // world[0] == Blue Connection, south from Blue Connection 
-        // will be Library (loc1) check!
+        // world[3] =  Kirkhof
+        world[3].add_neighbor("west", world[0]); //west is Library (loc1)
+        world[3].add_neighbor("north", world[9]); //north is Laker Village (loc10)
+        world[3].add_neighbor("south", world[7]); //south is Gym (loc8)
 
-        world[3].add_neighbor("east", world[1]); // world[0] == Kirkhof, east from Kirkhof 
-        // will be Cafeteria (loc2) check!
-        world[3].add_neighbor("west", world[0]); // world[0] == Kirkhof, west from Kirkhof 
-        // will be Library (loc1) check!
-        world[3].add_neighbor("north", world[6]); // world[0] == Kirkhof, north from Kirkhof 
-        // will be AuSable (loc7) check!
-        world[3].add_neighbor("south", world[2]); // world[0] == Kirkhof, south from Kirkhof 
-        // will be Blue Connection (loc3) check!
+        //world[4] = Bathroom,
+        world[4].add_neighbor("east", world[0]); //east is Library (loc1) 
+        world[4].add_neighbor("north", world[8]); //north is Woods (loc9) 
+        world[4].add_neighbor("south", world[6]); //south is AuSable (loc7) 
 
-        world[4].add_neighbor("east", world[0]); // world[0] == Bathroom, east from Bathroom 
-        // will be Library (loc1) check!
-        world[4].add_neighbor("west", world[5]); // world[0] == Bathroom, west from Bathroom 
-        // will be Mackinac (loc6) check! 
-        world[4].add_neighbor("north", world[7]); // world[0] == Bathroom, north from Bathroom 
-        // will be Gym (loc8) check!
-        world[4].add_neighbor("south", world[6]); // world[0] == Bathroom, south from Bathroom 
-        // will be AuSable (loc7) check!
+        //world[5] = Mackinac
+        world[5].add_neighbor("north", world[1]); // north is Cafeteria (loc2)
+        
+        //world[6] = AuSable
+        world[6].add_neighbor("east", world[1]); // east is cafeteria (loc2)
+        world[6].add_neighbor("north", world[4]); //north is bathroom (loc5)
 
-        world[5].add_neighbor("east", world[4]); // world[0] == Mackinac, east from Mackinac 
-        // will be Bathroom (loc5) check!
-        world[5].add_neighbor("west", world[2]); // world[0] == Mackinac, west from Mackinac 
-        // will be Blue Connection (loc3) check!
-        world[5].add_neighbor("north", world[1]); // world[0] == Mackinac, north from Mackinac 
-        // will be Cafeteria (loc2) check!
-        world[5].add_neighbor("south", world[7]); // world[0] == Mackinac, south from Mackinac 
-        // will be Gym (loc8) check!
+        // world[7] == Gym
+        world[7].add_neighbor("west", world[1]); // west is Cafeteria (loc2) 
+        world[7].add_neighbor("north", world[3]); // north is Kirkhof (loc4)
 
-        world[6].add_neighbor("east", world[2]); // world[0] == AuSable, east from AuSable 
-        // will be Blue Connection (loc3) check!
-        world[6].add_neighbor("west", world[1]); // world[0] == AuSable, west from AuSable 
-        // will be Cafeteria (loc2) check! 
-        world[6].add_neighbor("north", world[4]); // world[0] == AuSable, north from AuSable 
-        // will be Bathroom (loc5) check!
-        world[6].add_neighbor("south", world[3]); // world[0] == AuSable, south from AuSable 
-        // will be Kirkhof (loc4) check!
+        //world[8] = Woods     
+        world[8].add_neighbor("east", world[2]); // east is Blue C (loc3) 
+        world[8].add_neighbor("south", world[4]); //south is Bathroom (loc5) 
 
-        world[7].add_neighbor("east", world[2]); // world[0] == Gym, east from Gym 
-        // will be Blue Connection (loc3) check!
-        world[7].add_neighbor("west", world[1]); // world[0] == Gym, west from Gym 
-        // will be Cafeteria (loc2) check!
-        world[7].add_neighbor("north", world[5]); // world[0] == Gym, north from Gym 
-        // will be Mackinac (loc6) check!
-        world[7].add_neighbor("south", world[4]); // world[0] == Gym, south from Gym 
-        // will be Bathroom (loc5) check!
+        //world[9] = Laker Village     
+        world[9].add_neighbor("west", world[2]); //west is Blue C (loc3) 
+        world[9].add_neighbor("south", world[3]); //south is Kirkhof (loc4)
 
-
-
+        //NPC 
         world[1].add_npc(BigFoot); // Cafeteria
-        world[4].add_npc(WonderWoman); // Bathroom
-        world[3].add_npc(Elf); // Kirkhof
+        world[7].add_npc(WonderWoman); // Gym
+        world[8].add_npc(Elf); // Woods
         world[5].add_npc(Guard); // Mackinac
-        world[7].add_npc(Clown); // Gym
+        world[4].add_npc(Clown); // Bathroom
 
+        //Items
         world[0].add_item(Knife); // library
         world[0].add_item(Cauliflower); // library
         world[1].add_item(Mango); // Cafeteria
@@ -521,6 +546,8 @@ void Game::play() {
 
     while (gameActive) {
         std::cout << "> ";
+
+        //std::cout << currentLocation << std::endl; //xx
         std::string userInput;
         std::getline(std::cin, userInput);
 
@@ -547,6 +574,7 @@ void Game::play() {
         } else {
             std::cout << "Unknown command: " << command << "\n";
         }
+        //currentLocation = random_location(); //xx
     }
 
     if (numCalories <= 0) {
