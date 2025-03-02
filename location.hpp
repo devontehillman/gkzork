@@ -25,7 +25,7 @@ class Location {
         std::string name;
         std::string description;
         bool visited;
-        std::map<std::string, Location*> neighbors;
+        std::map<std::string, Location> neighbors;
         std::vector<NPC> npcs;
         std::vector<Item> items;
     public:
@@ -35,12 +35,12 @@ class Location {
         : name(locationName), description(description), visited(false) {}
 
     //might not need the * here of in the instantiation of the variable XX
-    std::map<std::string, Location*> get_locations(){
+    std::map<std::string, Location> get_locations(){
         return neighbors;
     }
 
     //this is named add_location in the instructions 
-    void add_neighbor(std::string direction, Location* newLocation){
+    void add_neighbor(std::string direction, Location newLocation){
         // add new location into the map with the provided direction
         
         // //check if direction(key) is valid 1-5 or n,s,e,w + 'through' XX I could use this or get rid of it
@@ -57,9 +57,9 @@ class Location {
         }
 
         //check if the the location(value) is already in the map 
-        for(const auto& pair : neighbors) {
+        for(auto& pair : neighbors) {
             //iterate through the map and make sure the location is not already in the map
-            if(pair.second == newLocation) {
+            if(pair.second.name == newLocation.name) {
                 std::cerr << "Error: this location has already been assigned to another direction.\n";
                 return;
             }
@@ -138,7 +138,7 @@ class Location {
 
         os << "\n You can go in the following directions:\n";
         for(const auto& pair : location.neighbors){
-            os << "[" << pair.first << "] -> " << pair.second->name << "\n";
+            os << "[" << pair.first << "] -> " << pair.second.name << "\n";
         }
 
         return os;
