@@ -35,12 +35,12 @@ class Location {
         : name(locationName), description(description), visited(false) {}
 
     //might not need the * here of in the instantiation of the variable XX
-    std::map<std::string, Location> get_locations(){
-        return neighbors;
-    }
+    // std::map<std::string, Location> get_locations() const {
+    //     return neighbors;
+    // }
 
     //this is named add_location in the instructions 
-    void add_neighbor(std::string direction, Location newLocation){
+    void add_neighbor(std::string direction, Location& newLocation){
         // add new location into the map with the provided direction
         
         // //check if direction(key) is valid 1-5 or n,s,e,w + 'through' XX I could use this or get rid of it
@@ -71,22 +71,22 @@ class Location {
     }
 
     //adding an npc into the vector of the npc
-    void add_npc(NPC npc){
+    void add_npc(NPC& npc){
         npcs.push_back(npc);
     }
 
     //return the vector of npcs for this location
-    std::vector<NPC> get_npcs(){
+    std::vector<NPC>& get_npcs(){
         return npcs;
     }
 
     //XX adding an item to the 'Locations NPC vector'???? 
-    void add_item(Item item){
+    void add_item(Item& item){
         items.push_back(item);
     }
 
     //return all item for this location
-    std::vector<Item> get_items(){
+    std::vector<Item>& get_items(){
         return items;
     }
 
