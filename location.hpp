@@ -117,7 +117,7 @@ class Location {
         }
     }
 
-    std::map<std::string, Location*> get_neighbors() const {
+    std::map<std::string, Location> get_neighbors() const {
         return neighbors;
     }
 

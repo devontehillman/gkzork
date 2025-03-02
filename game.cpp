@@ -48,7 +48,7 @@ void Game::show_help(const std::vector<std::string>& args) {
 
 // }
 
-void Game::meet(std::vector<std::string>& target) {
+void Game::meet(const std::vector<std::string>& target) {
 
     std::vector<NPC> getNpcs = currentLocation.get_npcs(); // store current room's NPCs
 
@@ -67,11 +67,11 @@ void Game::meet(std::vector<std::string>& target) {
 
     std::cout << "NPC not found" << std::endl;
     return;
-    }
+}
 
 
 
-void Game::go(std::vector<std::string>& target) {
+void Game::go(const std::vector<std::string>& target) {
 
     if (currentLocation.get_locations().empty()) {
         std::cout << "There aren't any neighbors for current location" << std::endl;
@@ -95,7 +95,7 @@ void Game::go(std::vector<std::string>& target) {
             // strings we passed in the parameter
 
             if (curKey != target.end()) { // if this key we tried to find doesn't reach 
-        // the end of the iteration for the vector, this means the key in map is definitely in vector
+            // the end of the iteration for the vector, this means the key in map is definitely in vector
                 currentLocation = keyvalue_pair.second; 
                 return;
                 // the player's current location needs to be
@@ -107,13 +107,12 @@ void Game::go(std::vector<std::string>& target) {
                 // "neighbors" map and changed if statement to "if(pair.second.name == newLocation.name)"
                 // in add neighbor function.
             }
-
-
         }
 
         std::cout << "Can't go to the direction you provided" << std::endl;
         return;
-
+    }
+}
 /*
 If the std::vector target item is in the room it will remove it from
 the room’s inventory, add it to the user’s inventory, and add the weight of
@@ -153,7 +152,7 @@ void Game::take(const std::vector<std::string>& target) {
 
 }
 
-void Game::show_items(std::vector<std::string>& target) {
+void Game::show_items(const std::vector<std::string>& target) {
 
     if (inventory.empty()) {
         std::cout << "You have no items in your inventory" << std::endl;
@@ -176,7 +175,9 @@ void Game::show_items(std::vector<std::string>& target) {
     // } else {
     //     std::cout << "There is no " << userInput << " here.\n"; //xx might not need because the remove item prints item not available if it dne
     // }
+    }
 }
+
 
 /*
 Removes the std::vector target item (if it exists) from the user’s inventory, 
@@ -259,14 +260,14 @@ void Game::look(const std::vector<std::string>& args) {
     }
 
     // Print directions and neighboring locations
-    std::map<std::string, Location*> neighbors = currentLocation.get_neighbors();
+    std::map<std::string, Location> neighbors = currentLocation.get_neighbors();
     if (!neighbors.empty()) {
         std::cout << "You can go:\n";
         for (const auto& neighbor : neighbors) {
             const std::string& direction = neighbor.first;
-            Location* location = neighbor.second;
-            if (location->get_visited()) {
-                std::cout << "- " << direction << " to " << location->get_name() << "\n";
+            Location location = neighbor.second;
+            if (location.get_visited()) {
+                std::cout << "- " << direction << " to " << location.get_name() << "\n";
             } else {
                 std::cout << "- " << direction << "\n";
             }
@@ -293,11 +294,11 @@ void Game::quit(const std::vector<std::string>& args) {
 std::map<std::string, Command> Game::setup_commands() {
     std::map<std::string, Command> cmds;
     cmds["show help"] = std::bind(&Game::show_help, this, std::placeholders::_1);
-    //cmds["meet"]      = std::bind(&Game::meet, this, std::placeholders::_1);
+    cmds["meet"]      = std::bind(&Game::meet, this, std::placeholders::_1);
     cmds["take"]      = std::bind(&Game::take, this, std::placeholders::_1); //xx 
     cmds["give"]      = std::bind(&Game::give, this, std::placeholders::_1); //xx
-    //cmds["go"]        = std::bind(&Game::go, this, std::placeholders::_1);
-    //cmds["show items"]= std::bind(&Game::show_items, this, std::placeholders::_1);
+    cmds["go"]        = std::bind(&Game::go, this, std::placeholders::_1);
+    cmds["show items"]= std::bind(&Game::show_items, this, std::placeholders::_1);
     cmds["look"]      = std::bind(&Game::look, this, std::placeholders::_1); //xx
     cmds["quit"]      = std::bind(&Game::quit, this, std::placeholders::_1); //xx
     return cmds;
