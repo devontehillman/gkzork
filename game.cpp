@@ -534,13 +534,13 @@ void Game::play() {
 
         std::string command = tokens[0];
 
-        if (tokens.size() > 1 && tokens[1] == "help") {
+        if (tokens.size() > 1 && tokens[1] == "help" || tokens[1] == "items") {
             command = tokens[0] + " " + tokens[1];
             tokens.erase(tokens.begin());
         }
         // check of token == to two word commands XX
         tokens.erase(tokens.begin());
-
+        
 
         if (commands.find(command) != commands.end()) {
             commands[command](tokens);
