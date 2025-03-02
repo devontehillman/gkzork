@@ -34,11 +34,6 @@ class Location {
     Location(std::string locationName, std::string description)
         : name(locationName), description(description), visited(false) {}
 
-    //might not need the * here of in the instantiation of the variable XX
-    // std::map<std::string, Location> get_locations() const {
-    //     return neighbors;
-    // }
-
     //this is named add_location in the instructions 
     void add_neighbor(std::string direction, Location& newLocation){
         // add new location into the map with the provided direction
