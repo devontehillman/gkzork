@@ -16,7 +16,7 @@ class Game {
     private:
     std::map<std::string, Command> commands;  // Single commands map
     std::vector<Item> inventory;
-    int weight;
+    float weight;
     std::vector<Location> world;
     Location currentLocation;
     int numCalories = 500;
