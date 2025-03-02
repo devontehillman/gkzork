@@ -90,6 +90,10 @@ class Location {
         return items;
     }
 
+    std::string get_description(){
+        return description;
+    }
+
     //identify the current location has been visited
     void set_visited(){
         visited = true; 
@@ -97,6 +101,24 @@ class Location {
 
     bool get_visited(){
         return visited;
+    }
+
+    std::string get_name() const {
+        return name;
+    }
+
+    //remove an item from the location
+    void remove_item(Item& item) {
+        auto it = std::find(items.begin(), items.end(), item);
+        if (it != items.end()) {
+            items.erase(it);
+        } else {
+            std::cerr << "Error: Item not found in this location.\n";
+        }
+    }
+
+    std::map<std::string, Location*> get_neighbors() const {
+        return neighbors;
     }
 
     //overloading the stream operator

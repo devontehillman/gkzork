@@ -19,7 +19,7 @@ class Game {
     int weight;
     std::vector<Location> world;
     Location currentLocation;
-    int numCalories = 0;
+    int numCalories = 500;
     bool gameActive;
     
     public:
@@ -36,6 +36,7 @@ class Game {
     void show_items(std::vector<std::string>& target); // Hrcio's
     void look(std::vector<std::string>& target);
     void quit(std::vector<std::string>& target);
+
 
 
     std::map<std::string, Command> setup_commands();
