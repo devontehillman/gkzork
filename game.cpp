@@ -86,7 +86,7 @@ void Game::go(const std::vector<std::string>& target) {
     }
     else {
 
-        for (auto& keyvalue_pair : currentLocation.get_locations()) { // iterate through the
+        for (auto& keyvalue_pair : currentLocation.get_neighbors()) { // iterate through the
             // map/dictionary with the elements being the key and value paired up, for example:
             // key for first iteration could be a string - "North", value associated to that key
             // is the Location object.
@@ -384,77 +384,77 @@ Location Game::create_world() {
         // Set neighbor relationships if desired, e.g.:
         // world[0].add_neighbor("east", &world[1]);  // etc.
 
-        world[0].add_neighbor("east", loc4); // world[0] == library, east from library 
+        world[0].add_neighbor("east", world[3]); // world[0] == library, east from library 
         // will be Kirkhof (loc4) check!
-        world[0].add_neighbor("west", loc5); // world[0] == library, west from library 
+        world[0].add_neighbor("west", world[4]); // world[0] == library, west from library 
         // will be Bathroom (loc5) check!
-        world[0].add_neighbor("north", loc3); // world[0] == library, north from library 
+        world[0].add_neighbor("north", world[2]); // world[0] == library, north from library 
         // will be Blue Connection (loc3) check!
-        world[0].add_neighbor("south", loc1); // world[0] == library, south from library 
+        world[0].add_neighbor("south", world[1]); // world[0] == library, south from library 
         // will be Cafeteria (loc2) check!
 
-        world[1].add_neighbor("east", loc4); // world[0] == Cafeteria, east from Cafeteria 
-        // will be gym (loc4) check!
-        world[1].add_neighbor("west", loc5); // world[0] == Cafeteria, west from Cafeteria 
-        // will be kirkhof (loc5) check!
-        world[1].add_neighbor("north", loc3); // world[0] == Cafeteria, north from Cafeteria 
-        // will be Library (loc3) check!
-        world[1].add_neighbor("south", loc1); // world[0] == Cafeteria, south from Cafeteria 
-        // will be Mackinac (loc2) check!
+        world[1].add_neighbor("east", world[7]); // world[0] == Cafeteria, east from Cafeteria 
+        // will be Gym (loc8) check!
+        world[1].add_neighbor("west", world[6]); // world[0] == Cafeteria, west from Cafeteria 
+        // will be Ausable (loc7) check!
+        world[1].add_neighbor("north", world[0]); // world[0] == Cafeteria, north from Cafeteria 
+        // will be Library (loc1) check!
+        world[1].add_neighbor("south", world[5]); // world[0] == Cafeteria, south from Cafeteria 
+        // will be Mackinac (loc6) check!
 
-        world[2].add_neighbor("east", loc4); // world[0] == Blue Connection, east from Blue Connection 
-        // will be Mackinac (loc4) check!
-        world[2].add_neighbor("west", loc5); // world[0] == Blue Connection, west from Blue Connection 
-        // will be Gym (loc5) check!
-        world[2].add_neighbor("north", loc3); // world[0] == Blue Connection, north from Blue Connection 
-        // will be Kirkhof (loc3) check!
-        world[2].add_neighbor("south", loc1); // world[0] == Blue Connection, south from Blue Connection 
-        // will be Library (loc2) check!
+        world[2].add_neighbor("east", world[5]); // world[0] == Blue Connection, east from Blue Connection 
+        // will be Mackinac (loc6) check!
+        world[2].add_neighbor("west", world[7]); // world[0] == Blue Connection, west from Blue Connection 
+        // will be Gym (loc8) check!
+        world[2].add_neighbor("north", world[3]); // world[0] == Blue Connection, north from Blue Connection 
+        // will be Kirkhof (loc4) check!
+        world[2].add_neighbor("south", world[0]); // world[0] == Blue Connection, south from Blue Connection 
+        // will be Library (loc1) check!
 
-        world[3].add_neighbor("east", loc4); // world[0] == Kirkhof, east from Kirkhof 
-        // will be Cafeteria (loc4) check!
-        world[3].add_neighbor("west", loc5); // world[0] == Kirkhof, west from Kirkhof 
-        // will be Library (loc5) check!
-        world[3].add_neighbor("north", loc3); // world[0] == Kirkhof, north from Kirkhof 
-        // will be AuSable (loc3) check!
-        world[3].add_neighbor("south", loc1); // world[0] == Kirkhof, south from Kirkhof 
-        // will be Blue Connection (loc2) check!
+        world[3].add_neighbor("east", world[1]); // world[0] == Kirkhof, east from Kirkhof 
+        // will be Cafeteria (loc2) check!
+        world[3].add_neighbor("west", world[0]); // world[0] == Kirkhof, west from Kirkhof 
+        // will be Library (loc1) check!
+        world[3].add_neighbor("north", world[6]); // world[0] == Kirkhof, north from Kirkhof 
+        // will be AuSable (loc7) check!
+        world[3].add_neighbor("south", world[2]); // world[0] == Kirkhof, south from Kirkhof 
+        // will be Blue Connection (loc3) check!
 
-        world[4].add_neighbor("east", loc4); // world[0] == Bathroom, east from Bathroom 
-        // will be Library (loc4) check!
-        world[4].add_neighbor("west", loc5); // world[0] == Bathroom, west from Bathroom 
-        // will be Mackinac (loc5) check! 
-        world[4].add_neighbor("north", loc3); // world[0] == Bathroom, north from Bathroom 
-        // will be Gym (loc3) check!
-        world[4].add_neighbor("south", loc1); // world[0] == Bathroom, south from Bathroom 
-        // will be AuSable (loc2) check!
+        world[4].add_neighbor("east", world[0]); // world[0] == Bathroom, east from Bathroom 
+        // will be Library (loc1) check!
+        world[4].add_neighbor("west", world[5]); // world[0] == Bathroom, west from Bathroom 
+        // will be Mackinac (loc6) check! 
+        world[4].add_neighbor("north", world[7]); // world[0] == Bathroom, north from Bathroom 
+        // will be Gym (loc8) check!
+        world[4].add_neighbor("south", world[6]); // world[0] == Bathroom, south from Bathroom 
+        // will be AuSable (loc7) check!
 
-        world[5].add_neighbor("east", loc4); // world[0] == Mackinac, east from Mackinac 
-        // will be Bathroom (loc4) check!
-        world[5].add_neighbor("west", loc5); // world[0] == Mackinac, west from Mackinac 
-        // will be Blue Connection (loc5) check!
-        world[5].add_neighbor("north", loc3); // world[0] == Mackinac, north from Mackinac 
-        // will be Cafeteria (loc3) check!
-        world[5].add_neighbor("south", loc1); // world[0] == Mackinac, south from Mackinac 
-        // will be Gym (loc2) check!
+        world[5].add_neighbor("east", world[4]); // world[0] == Mackinac, east from Mackinac 
+        // will be Bathroom (loc5) check!
+        world[5].add_neighbor("west", world[2]); // world[0] == Mackinac, west from Mackinac 
+        // will be Blue Connection (loc3) check!
+        world[5].add_neighbor("north", world[1]); // world[0] == Mackinac, north from Mackinac 
+        // will be Cafeteria (loc2) check!
+        world[5].add_neighbor("south", world[7]); // world[0] == Mackinac, south from Mackinac 
+        // will be Gym (loc8) check!
 
-        world[6].add_neighbor("east", loc4); // world[0] == AuSable, east from AuSable 
-        // will be Blue Connection (loc4) check!
-        world[6].add_neighbor("west", loc5); // world[0] == AuSable, west from AuSable 
-        // will be Cafeteria (loc5) check! 
-        world[6].add_neighbor("north", loc3); // world[0] == AuSable, north from AuSable 
-        // will be Bathroom (loc3) check!
-        world[6].add_neighbor("south", loc1); // world[0] == AuSable, south from AuSable 
-        // will be Kirkhof (loc2) check!
+        world[6].add_neighbor("east", world[2]); // world[0] == AuSable, east from AuSable 
+        // will be Blue Connection (loc3) check!
+        world[6].add_neighbor("west", world[1]); // world[0] == AuSable, west from AuSable 
+        // will be Cafeteria (loc2) check! 
+        world[6].add_neighbor("north", world[4]); // world[0] == AuSable, north from AuSable 
+        // will be Bathroom (loc5) check!
+        world[6].add_neighbor("south", world[3]); // world[0] == AuSable, south from AuSable 
+        // will be Kirkhof (loc4) check!
 
-        world[7].add_neighbor("east", loc4); // world[0] == Gym, east from Gym 
-        // will be Blue Connection (loc4) check!
-        world[7].add_neighbor("west", loc5); // world[0] == Gym, west from Gym 
-        // will be Cafeteria (loc5) check!
-        world[7].add_neighbor("north", loc3); // world[0] == Gym, north from Gym 
-        // will be Mackinac (loc3) check!
-        world[7].add_neighbor("south", loc1); // world[0] == Gym, south from Gym 
-        // will be Bathroom (loc2) check!
+        world[7].add_neighbor("east", world[2]); // world[0] == Gym, east from Gym 
+        // will be Blue Connection (loc3) check!
+        world[7].add_neighbor("west", world[1]); // world[0] == Gym, west from Gym 
+        // will be Cafeteria (loc2) check!
+        world[7].add_neighbor("north", world[5]); // world[0] == Gym, north from Gym 
+        // will be Mackinac (loc6) check!
+        world[7].add_neighbor("south", world[4]); // world[0] == Gym, south from Gym 
+        // will be Bathroom (loc5) check!
 
 
 
