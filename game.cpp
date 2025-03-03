@@ -12,13 +12,10 @@
 #include <ctime> // For displaying time in hr, min, & sec
 
 Game::Game() {
-    // Seed the random number generator
+
+    // Seed the random number generator to make sure each time you
+    // run a new game, different numbers are produced.
     srand(static_cast<unsigned int>(time(nullptr)));
-
-    // std::time_t getCurTime = std::time(nullptr);
-
-    // // Convert that current time to a local time
-    // localTime = std::localtime(&getCurTime);
 
     // Initialize commands map, instance of the game, loop stop condition,
     commands = setup_commands();
@@ -98,7 +95,7 @@ void Game::go(const std::vector<std::string>& target) {
 
     currentLocation.set_visited(); // sets visited status to true for current location
 
-    if (weight > inventoryCapacity) { // checks to see if player's weight is over 30 pounds.
+    if (weight > inventoryCapacity) { // checks to see if player's weight is over capacity.
         std::cerr << "the player's weight is over " << weight << " lbs, can't move!";
         return; 
     }
@@ -181,40 +178,86 @@ void Game::show_items(const std::vector<std::string>& target) {
 void Game::attack(const std::vector<std::string>& target) {
 
     std::vector<NPC>& getNpcs = currentLocation.get_npcs(); // store current room's NPCs
-
     std::string userInput = target[0]; //string rep of the NPC we want to attack
 
-    auto it = std::find_if(getNpcs.begin(), getNpcs.end(), [&userInput](const NPC& npc) {
+    auto it_Npc = std::find_if(getNpcs.begin(), getNpcs.end(), [&userInput](const NPC& npc) {
         return npc.getName() == userInput;
     });
 
-    if (it != getNpcs.end()) {
-        getNpcs.erase(it);
-        std::cout << "You kilt " << userInput << ". You're a menace to society!" << std::endl;
-        return;
+    auto it_inventory = std::find_if(inventory.begin(), inventory.end(), [&userInput](const Item& item) {
+        return item.get_name() == "Chainsaw" || item.get_name() == "Knife";
+    });
+
+    if (it_Npc != getNpcs.end() && it_inventory == inventory.end()) {
+
+        if (userInput == "Guard") {
+            gameActive = false;
+            std::cout << userInput << " beat the crap out of you. Then puts you in jail!" << std::endl;
+            return;
+        }
+        if (userInput == "WonderWoman") {
+            gameActive = false;
+            std::cout << userInput << " crushes your skull!! What were you thinking?" << std::endl;
+            return;
+        } 
+        if (userInput == "BigFoot") {
+            gameActive = false;
+            std::cout << userInput << " stomped on you like how you stomp on ants." << std::endl;
+            return;
+        }
+        if (userInput == "Elf") {
+            gameActive = false;
+            std::cout << "You killed the " << userInput << ". What got into you?" << std::endl;
+            return;
+        }
+        if (userInput == "Clown") {
+            getNpcs.erase(it_Npc);
+            std::cout << "You killed the " << userInput << ". Eh, he's a weirdo anyways." << std::endl;
+            return;
+        }
+
     }
 
-    // for (auto curNPC : getNpcs) { // loop through each NPC that's in the room
+    else if (it_Npc != getNpcs.end() && it_inventory != inventory.end()) {
 
-    //     if (curNPC.getName() == userInput) { // if current NPC is the same as the name user inputs
+        Item item = *it_inventory;
 
-    //         NPC copycurNPC = curNPC;
-    //         getNpcs.erase(copycurNPC);
+        if (userInput == "Guard") {
+            getNpcs.erase(it_Npc);
+            std::cout << "You were able to murder Guard with your " << item.get_name() << std::endl;
+            return;
+        }
+        
+        if (userInput == "WonderWoman") {
+            gameActive = false;
+            std::cout << "WonderWoman is unbeatable, even with the weapon. You got burned!!" << std::endl;
+            return;
+        } 
+        
+        if (userInput == "BigFoot") {
+            getNpcs.erase(it_Npc);
+            std::cout << "The " << item.get_name() << " surprisingly kills BigFoot. Yayy!" << std::endl;
+            return;
+        }
 
+        if (userInput == "Elf") {
+            gameActive = false;
+            std::cout << "You killed the Elf. What got into you?" << std::endl;
+            return;
+        }
 
-    //         std::cout << curNPC.getDescription() << std::endl;
-    //         // Now print the description the NPC gives us when we meet him/her
-    //         return; 
-    //     }
-    // }
-    std::cout << "NPC not found, you can't kill an NPC that don't exist" << std::endl;
+        if (userInput == "Clown") {
+            getNpcs.erase(it_Npc);
+            std::cout << "You killed the Clown with your " << item.get_name() << 
+            ". Eh, he's a weirdo anyways." << std::endl;
+            return;
+        }
+    }
+
+    std::cout << "NPC not found" << std::endl;
     return;
 
 }
-
-// void Game::consume(const std::vector<std::string>& target) {
-
-// }
 
 /*
 Removes the target item from the user's inventory, adds it to the current location's inventory,
@@ -364,7 +407,8 @@ std::map<std::string, Command> Game::setup_commands() {
     cmds["quit"]      = std::bind(&Game::quit, this, std::placeholders::_1); 
     cmds["terminate"]      = std::bind(&Game::quit, this, std::placeholders::_1); 
     cmds["retire"]      = std::bind(&Game::quit, this, std::placeholders::_1); 
-    cmds["consume"] = std::bind(&Game::consume, this, std::placeholders::_1); 
+    cmds["consume"] = std::bind(&Game::consume, this, std::placeholders::_1);
+    cmds["attack"] = std::bind(&Game::attack, this, std::placeholders::_1);
     return cmds;
 }
 
@@ -592,6 +636,6 @@ void Game::play() {
     if (numCalories <= 0) {
         std::cout << "Congratulations! The elf has received enough calories.\n";
     } else {
-        std::cout << "Game over. The elf did not receive enough calories.\n";
+        std::cout << "Game over. The elf never received enough calories.\n";
     }
 }
