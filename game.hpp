@@ -40,7 +40,6 @@ class Game {
     void show_items(const std::vector<std::string>& target); 
     void look(const std::vector<std::string>& target);
     void quit(const std::vector<std::string>& target);
-    void consume(const std::vector<std::string>& target);
 
     std::map<std::string, Command> setup_commands();
     Location random_location();
