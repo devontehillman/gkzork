@@ -16,6 +16,7 @@ class Game {
     private:
     std::map<std::string, Command> commands;  // Single commands map
     std::vector<Item> inventory;
+    int inventoryCapacity = 30;
     float weight;
     std::vector<Location> world;
     Location currentLocation;
@@ -36,6 +37,7 @@ class Game {
     void show_items(const std::vector<std::string>& target); 
     void look(const std::vector<std::string>& target);
     void quit(const std::vector<std::string>& target);
+    void consume(const std::vector<std::string>& target);
 
     std::map<std::string, Command> setup_commands();
     Location random_location();
