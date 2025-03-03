@@ -28,16 +28,14 @@ class Game {
     
     // Forward declaration of actions
     void show_help(const std::vector<std::string>& target);
-    void talk(const std::vector<std::string>& target); // don't need talk function anymore
+    void talk(const std::vector<std::string>& target); 
     void meet(const std::vector<std::string>& target);
     void take(const std::vector<std::string>& target);
     void give(const std::vector<std::string>& target);
-    void go(const std::vector<std::string>& target); // Hrcio's
-    void show_items(const std::vector<std::string>& target); // Hrcio's
+    void go(const std::vector<std::string>& target);
+    void show_items(const std::vector<std::string>& target); 
     void look(const std::vector<std::string>& target);
     void quit(const std::vector<std::string>& target);
-
-
 
     std::map<std::string, Command> setup_commands();
     Location random_location();
