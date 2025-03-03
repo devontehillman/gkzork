@@ -21,6 +21,7 @@ class Game {
     Location currentLocation;
     int numCalories = 500;
     bool gameActive;
+    std::tm* localTime;
     
     public:
     
@@ -32,6 +33,8 @@ class Game {
     void meet(const std::vector<std::string>& target);
     void take(const std::vector<std::string>& target);
     void give(const std::vector<std::string>& target);
+    void attack(const std::vector<std::string>& target);
+    void consume(const std::vector<std::string>& target);
     void go(const std::vector<std::string>& target);
     void show_items(const std::vector<std::string>& target); 
     void look(const std::vector<std::string>& target);
