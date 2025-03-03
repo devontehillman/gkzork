@@ -24,17 +24,17 @@ Game::Game() {
 // Prints a manuel like page of available commands for the user
 void Game::show_help(const std::vector<std::string>& args) {
     std::cout << "Available commands:\n";
-    std::cout << "  show help      - Display this help message\n";
-    std::cout << "  meet <npc>     - Meet an NPC in the current location\n";
-    std::cout << "  take <item>    - Take an item from the current location\n";
-    std::cout << "  give <item>    - Give an item to the current location or NPC\n";
-    std::cout << "  go <direction> - Move to a neighboring location\n";
-    std::cout << "  show items     - Show items in your inventory\n";
-    std::cout << "  look           - Look around the current location\n";
-    std::cout << "  Attack         - slapp that hoe if you ain't got nothing in your inventory. ";
+    std::cout << "  show help, display help, present help - Display this help message\n";
+    std::cout << "  meet <npc>, encounter <npc>, confront <npc> - Meet an NPC in the current location\n";
+    std::cout << "  take <item>, get <item>, grab <item> - Take an item from the current location\n";
+    std::cout << "  give <item>, feed <item>, lend <item> - Give an item to the current location or NPC\n";
+    std::cout << "  go <direction>, walk <direction>, run <direction> - Move to a neighboring location\n";
+    std::cout << "  show items, display items, or present items - Show items in your inventory\n";
+    std::cout << "  look, see, investigate - Look around the current location\n";
+    std::cout << "  Attack - slapp that hoe if you ain't got nothing in your inventory. ";
     std::cout << "  Otherwise, use that weapon you may have\n"; //xx Edit
     std::cout << "  Consume <item> - drink item \n"; //xx Edit
-    std::cout << "  quit        - Quit the game\n";
+    std::cout << "  quit, terminate, retire - Quit the game\n";
 }
 
 
