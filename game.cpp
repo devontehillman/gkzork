@@ -9,10 +9,16 @@
 #include <iomanip>
 #include <map> // For std::find
 #include <sstream> // For std::istringstream
+#include <ctime> // For displaying time in hr, min, & sec
 
 Game::Game() {
     // Seed the random number generator
     srand(static_cast<unsigned int>(time(nullptr)));
+
+    // std::time_t getCurTime = std::time(nullptr);
+
+    // // Convert that current time to a local time
+    // localTime = std::localtime(&getCurTime);
 
     // Initialize commands map, instance of the game, loop stop condition,
     commands = setup_commands();
@@ -23,6 +29,18 @@ Game::Game() {
 
 // Prints a manuel like page of available commands for the user
 void Game::show_help(const std::vector<std::string>& args) {
+
+    // this time gets seconds since 1970-01-01 00:00:00 UTC.
+    // For example: 1608436190 is a possible time to get since 1970
+    std::time_t getCurTime = std::time(nullptr);
+
+    // Since 1608436190 is a pointless way of looking at time,
+    // Lets convert it to the regular 12 or 24 hour time, most
+    // people are used to
+    localTime = std::localtime(&getCurTime);
+
+    std::cout << "What time is it? " <<
+    std::put_time(localTime, "%I:%M:%S %p") << std::endl;
     std::cout << "Available commands:\n";
     std::cout << "  show help, display help, present help - Display this help message\n";
     std::cout << "  meet <npc>, encounter <npc>, confront <npc> - Meet an NPC in the current location\n";
@@ -31,7 +49,7 @@ void Game::show_help(const std::vector<std::string>& args) {
     std::cout << "  go <direction>, walk <direction>, run <direction> - Move to a neighboring location\n";
     std::cout << "  show items, display items, or present items - Show items in your inventory\n";
     std::cout << "  look, see, investigate - Look around the current location\n";
-    std::cout << "  Attack - slapp that hoe if you ain't got nothing in your inventory. ";
+    std::cout << "  Attack <NPC>- slapp that hoe if you ain't got nothing in your inventory. ";
     std::cout << "  Otherwise, use that weapon you may have\n"; //xx Edit
     std::cout << "  Consume <item> - drink item \n"; //xx Edit
     std::cout << "  quit, terminate, retire - Quit the game\n";
@@ -158,6 +176,45 @@ void Game::show_items(const std::vector<std::string>& target) {
         // calling the class itself, since it returns an ostream created in Item.hpp
     }
 }
+
+
+void Game::attack(const std::vector<std::string>& target) {
+
+    std::vector<NPC>& getNpcs = currentLocation.get_npcs(); // store current room's NPCs
+
+    std::string userInput = target[0]; //string rep of the NPC we want to attack
+
+    auto it = std::find_if(getNpcs.begin(), getNpcs.end(), [&userInput](const NPC& npc) {
+        return npc.getName() == userInput;
+    });
+
+    if (it != getNpcs.end()) {
+        getNpcs.erase(it);
+        std::cout << "You kilt " << userInput << ". You're a menace to society!" << std::endl;
+        return;
+    }
+
+    // for (auto curNPC : getNpcs) { // loop through each NPC that's in the room
+
+    //     if (curNPC.getName() == userInput) { // if current NPC is the same as the name user inputs
+
+    //         NPC copycurNPC = curNPC;
+    //         getNpcs.erase(copycurNPC);
+
+
+    //         std::cout << curNPC.getDescription() << std::endl;
+    //         // Now print the description the NPC gives us when we meet him/her
+    //         return; 
+    //     }
+    // }
+    std::cout << "NPC not found, you can't kill an NPC that don't exist" << std::endl;
+    return;
+
+}
+
+// void Game::consume(const std::vector<std::string>& target) {
+
+// }
 
 /*
 Removes the target item from the user's inventory, adds it to the current location's inventory,
