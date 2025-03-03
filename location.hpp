@@ -54,6 +54,8 @@ class Location {
         }
         // add to neighbor map
         neighbors[direction] = newLocation;
+
+
     }
 
     //adding an npc into the vector of the npc
@@ -66,7 +68,7 @@ class Location {
         return npcs;
     }
 
-    // this is for adding items to whatever location in the game world 
+    //XX adding an item to the 'Locations NPC vector'???? 
     void add_item(Item& item){
         items.push_back(item);
     }
@@ -103,8 +105,8 @@ class Location {
         }
     }
 
-    std::map<std::string, Location> get_neighbors() const {
-        return neighbors;
+    const std::map<std::string, Location>& get_neighbors() const {
+    return neighbors;
     }
 
     //overloading the stream operator

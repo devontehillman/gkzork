@@ -98,7 +98,7 @@ void Game::go(const std::vector<std::string>& target) {
 
     currentLocation.set_visited(); // sets visited status to true for current location
 
-    if (weight > 30) { // checks to see if player's weight is over 30 pounds.
+    if (weight > inventoryCapacity) { // checks to see if player's weight is over 30 pounds.
         std::cerr << "the player's weight is over " << weight << " lbs, can't move!";
         return; 
     }
@@ -276,17 +276,18 @@ void Game::look(const std::vector<std::string>& target) {
     
     
     
-    if (currentLocation.get_neighbors().empty()) {
-        std::cout << "You can go:\n";
-        for (const auto& neighbor : neighbors) {
-            const std::string& direction = neighbor.first;
-            Location location = neighbor.second;
-            if (location.get_visited()) {
-                std::cout << "- " << direction << " to " << location.get_name() << "\n";
-            } else {
-                std::cout << "- " << direction << "\n";
-            }
-        }
+    if (!currentLocation.get_neighbors().empty()) {
+        std::cout << currentLocation << std::endl;
+        //std::cout << "You can go:\n";
+        // for (const auto& neighbor : neighbors) {
+        //     const std::string& direction = neighbor.first;
+        //     Location location = neighbor.second;
+        //     if (location.get_visited()) {
+        //         std::cout << "- " << direction << " to " << location.get_name() << "\n";
+        //     } else {
+        //         std::cout << "- " << direction << "\n";
+        //     }
+        // }
     } else {
         std::cout << "There are no exits here. Game is broken\n";
     }
@@ -302,6 +303,34 @@ void Game::quit(const std::vector<std::string>& args) {
     } else {
         std::cout << "Continuing the game...\n";
 
+    }
+}
+
+void Game::consume(const std::vector<std::string>& target) {
+    if (target.empty()) {
+        std::cout << "Consume what?\n";
+        return;
+    }
+
+    std::string userInput = target[0]; // string representation of the item we want to consume
+    auto it = std::find_if(inventory.begin(), inventory.end(), [&userInput](const Item& item) {
+        return item.get_name() == userInput;
+    });
+
+    if (it != inventory.end()) {
+        // Item found in the user's inventory
+        Item item = *it;
+        if (item.get_calories() == 0) {
+            std::cout << "You can't consume this item.\n";
+            return;
+        }
+        inventory.erase(it); // Remove item from user's inventory
+        weight -= item.get_weight(); // Decrease user's carried weight
+        std::cout << "You have consumed the " << item.get_name() << ".\n";
+        inventoryCapacity += 20; // Increase the amount inventory capacity by 50
+        std::cout << "Your inventory capacity has increased.\n";
+    } else {
+        std::cout << "You don't have that.\n";
     }
 }
 
@@ -335,6 +364,7 @@ std::map<std::string, Command> Game::setup_commands() {
     cmds["quit"]      = std::bind(&Game::quit, this, std::placeholders::_1); 
     cmds["terminate"]      = std::bind(&Game::quit, this, std::placeholders::_1); 
     cmds["retire"]      = std::bind(&Game::quit, this, std::placeholders::_1); 
+    cmds["consume"] = std::bind(&Game::consume, this, std::placeholders::_1); 
     return cmds;
 }
 
