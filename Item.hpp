@@ -76,9 +76,9 @@ class Item {
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Item& obj){
-        
+
     os << obj.itemname << "(" << obj.calories << " calories) - " << obj.weight << 
-    " lb - " << obj.descriptname;
+    " lb - " << obj.descriptname << ")";
     return os;
     };
 
